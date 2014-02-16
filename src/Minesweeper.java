@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -188,16 +187,20 @@ public class Minesweeper extends JFrame
         // so we want to generate 10 random numbers
         public MinesweeperModel()
         {
-            ArrayList<Integer> x = new ArrayList<Integer>();
-            ArrayList<Integer> y = new ArrayList<Integer>();
-            getTenRandomCoordinates(x, y);
-            for (int i = 0; i < 10; i++)
-            {
-                System.out.println(i + ":\tx: " + x.get(i) + "\ty: " + y.get(i));
-            }
+            ArrayList<Integer> X     = new ArrayList<Integer>();
+            ArrayList<Integer> Y     = new ArrayList<Integer>();
+            ArrayList<Integer> One   = new ArrayList<Integer>();
+            ArrayList<Integer> Two   = new ArrayList<Integer>();
+            ArrayList<Integer> Three = new ArrayList<Integer>();
+            ArrayList<Integer> Four  = new ArrayList<Integer>();
+            ArrayList<Integer> Five  = new ArrayList<Integer>();
+
+            getTenRandomUniqueCoordinates(X, Y);
+          //for (int i = 0; i < 10; i++) System.out.println(i + ":\tx: " + X.get(i) + "\ty: " + Y.get(i));
 
             // give the array random values for bombs
-            insertMines(x,y);
+            insertMines(X,Y);
+
             /*
             for (int i = 0; i < 10; i++)
                 for (int j = 0; j < 10; j++)
@@ -216,36 +219,36 @@ public class Minesweeper extends JFrame
             }
         }
 
-        public void getTenRandomCoordinates(ArrayList<Integer> x, ArrayList<Integer> y)
+        public void getTenRandomUniqueCoordinates(ArrayList<Integer> X, ArrayList<Integer> Y)
         {
-            ArrayList<Integer> ranNumArr = new ArrayList<Integer>();
-            Random seed = new Random();
-            int num;
+            // get the first set of coordinates
+            int x = getRandomNum(); X.add(x);
+            int y = getRandomNum(); Y.add(y);
 
-            // get 10 random numbers
+            // then get nine more, coding for uniqueness
             for (int i = 0; i < 10; i++)
             {
-                num = 1 + seed.nextInt(100);
-                if (0 == i) ranNumArr.add(num);
-                else
+                boolean areUnique = true;
+                x = getRandomNum();
+                y = getRandomNum();
+                for (int j = 0; j < X.size(); j++)
                 {
-                    for (int j = 0; j < ranNumArr.size(); j++)
+                    if (x == X.get(j) && y == Y.get(j))
                     {
-                        if (ranNumArr.get(j) != num)
-                        {
-                            ranNumArr.add(num);
-                            break;
-                        }
+                        areUnique = false;
+                        break;
                     }
                 }
+                if (areUnique == true) { X.add(x); Y.add(y);}
+                else i--;
             }
+        }
 
-            // convert them to x, y coordinates (note: x horizontal (i), y vert (j),
-            for (int i = 0; i < 10; i++)
-            {
-                x.add((ranNumArr.get(i) - 1) % 10);
-                y.add((ranNumArr.get(i)-1)/10);
-            }
+        private int getRandomNum()
+        {
+            Random seed = new Random();
+            int num = seed.nextInt(10);
+            return num;
         }
 
         public boolean isBomb(int i, int j)
