@@ -136,9 +136,40 @@ public class Minesweeper extends JFrame
                             button.setIcon(new ImageIcon("mine.png"));
                             break;
                         }
-                        else
+                        else if (model.isOne(i,j))
                         {
-                            sweepForward(i,j);
+                            button.setIcon(new ImageIcon("one.png"));
+                        }
+                        else if (model.isTwo(i, j))
+                        {
+                            button.setIcon(new ImageIcon("two.png"));
+                        }
+                        else if (model.isThree(i, j))
+                        {
+                            button.setIcon(new ImageIcon("three.png"));
+                        }
+                        else if (model.isFour(i, j))
+                        {
+                            button.setIcon(new ImageIcon("four.png"));
+                        }
+                        else if (model.isFive(i, j))
+                        {
+                            button.setIcon(new ImageIcon("five.png"));
+                        }
+                        else if (model.isSix(i, j))
+                        {
+                            button.setIcon(new ImageIcon("six.png"));
+                        }
+                        else if (model.isSeven(i, j))
+                        {
+                            button.setIcon(new ImageIcon("seven.png"));
+                        }
+                        else if (model.isEight(i, j))
+                        {
+                            button.setIcon(new ImageIcon("eight.png"));
+                        }
+                        {
+                         //   sweepForward(i,j);
                             break;
                         }
                     }
@@ -148,6 +179,7 @@ public class Minesweeper extends JFrame
         private void sweepForward(int i, int j)
         {
             boolean isBomb = false;
+            boolean isOne = false;
             while (!isBomb)
             {
                 isBomb = reveal(i,j);
@@ -168,6 +200,11 @@ public class Minesweeper extends JFrame
                 buttons[i][j].setIcon(new ImageIcon("mine.png"));
                 return true;
             }
+            else if (element == MINESWEEPER_ELEMENT.ONE)
+            {
+                buttons[i][j].setIcon(new ImageIcon("one.png"));
+                return true;
+            }
             else
             {
                 buttons[i][j].setIcon(new ImageIcon("aTile.ico"));
@@ -178,28 +215,25 @@ public class Minesweeper extends JFrame
     } // end private inner class ButtonHandler
 
 
-    private enum MINESWEEPER_ELEMENT {ONE, TWO, THREE, FOUR, FIVE, QUESTION_MARK, MINE, FLAG, BLANK};
+    private enum MINESWEEPER_ELEMENT {ONE, TWO, THREE, FOUR, FIVE, SIX,SEVEN, 
+                                      EIGHT, QUESTION_MARK, MINE, FLAG, BLANK};
     private class MinesweeperModel
     {
         private MINESWEEPER_ELEMENT[][] elements = new MINESWEEPER_ELEMENT[10][10];
 
 
-        // so we want to generate 10 random numbers
         public MinesweeperModel()
         {
             ArrayList<Integer> X     = new ArrayList<Integer>();
             ArrayList<Integer> Y     = new ArrayList<Integer>();
-            ArrayList<Integer> One   = new ArrayList<Integer>();
-            ArrayList<Integer> Two   = new ArrayList<Integer>();
-            ArrayList<Integer> Three = new ArrayList<Integer>();
-            ArrayList<Integer> Four  = new ArrayList<Integer>();
-            ArrayList<Integer> Five  = new ArrayList<Integer>();
+
 
             getTenRandomUniqueCoordinates(X, Y);
-          //for (int i = 0; i < 10; i++) System.out.println(i + ":\tx: " + X.get(i) + "\ty: " + Y.get(i));
+            for (int i = 0; i < 10; i++) System.out.println(i + ":\tx: " + X.get(i) + "\ty: " + Y.get(i));
 
             // give the array random values for bombs
             insertMines(X,Y);
+            insertNumbers();
 
             /*
             for (int i = 0; i < 10; i++)
@@ -210,6 +244,99 @@ public class Minesweeper extends JFrame
                 }
             */
         }
+
+        private void insertNumbers()
+        {
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                {
+                    if (elements[i][j] == MINESWEEPER_ELEMENT.MINE) continue;
+                    else
+                    {
+                        int count = 0;
+
+                        if (i > 0 && j > 0) { int localCount = lookForMine(i-1,j-1); count += localCount;} // look upper left
+                        if (i > 0)          { int localCount = lookForMine(i-1,j);   count += localCount;} // look up
+                        if (i > 0 && j < 9) { int localCount = lookForMine(i-1,j+1); count += localCount;} // look upper right
+                        if (j < 9)          { int localCount = lookForMine(i,j+1);   count += localCount;} // look right
+                        if (i < 9 && j < 9) { int localCount = lookForMine(i+1,j+1); count += localCount;} // look lower right
+                        if (i < 9)          { int localCount = lookForMine(i+1,j);   count += localCount;} // look down
+                        if (i < 9 && j > 0) { int localCount = lookForMine(i+1,j-1); count += localCount;} // look lower left
+                        if (j > 0)          { int localCount = lookForMine(i,j-1);   count += localCount;} // look left
+                        // insert the number into the grid
+                        if (count > 0) insertTheNumber(count,i,j);
+                    }
+                }
+        }
+
+        private void insertTheNumber(int count, int i, int j)
+        {
+            if      (1 == count) elements[i][j] = MINESWEEPER_ELEMENT.ONE;
+            else if (2 == count) elements[i][j] = MINESWEEPER_ELEMENT.TWO;
+            else if (3 == count) elements[i][j] = MINESWEEPER_ELEMENT.THREE;
+            else if (4 == count) elements[i][j] = MINESWEEPER_ELEMENT.FOUR;
+            else if (5 == count) elements[i][j] = MINESWEEPER_ELEMENT.FIVE;
+            else if (6 == count) elements[i][j] = MINESWEEPER_ELEMENT.SIX;
+            else if (7 == count) elements[i][j] = MINESWEEPER_ELEMENT.SEVEN;
+            else                 elements[i][j] = MINESWEEPER_ELEMENT.EIGHT;
+
+        }
+
+        private int lookForMine(int i, int j)
+        {
+            if (elements[i][j] == MINESWEEPER_ELEMENT.MINE) return 1;
+            else return 0;
+        }
+
+   /*     private void bottomRow()
+        {
+            int count = 0;
+            for (int j = 0; j < 10; j++)
+            {
+                if (elements[j][9] == MINESWEEPER_ELEMENT.MINE) continue;
+                else
+                {
+                    if (           elements[8][j] == MINESWEEPER_ELEMENT.MINE) count++; // look up
+                    if (j < 9 && elements[9][j+1] == MINESWEEPER_ELEMENT.MINE) count++; // look right
+                    if (j > 0 && elements[9][j-1] == MINESWEEPER_ELEMENT.MINE) count++; // look left
+                    insertTheNumber(count,9,j);
+                }
+            }
+        }
+
+
+        private void topRow()
+        {
+          int count = 0;
+          for (int j = 0; j < 10; j++)
+          {
+              if (elements[0][j] == MINESWEEPER_ELEMENT.MINE) continue;
+              else
+              {
+                  if (j < 9 && elements[0][j+1] == MINESWEEPER_ELEMENT.MINE) count++; // look right
+
+
+                  if (           elements[1][j] == MINESWEEPER_ELEMENT.MINE) count++; // look down
+                  if (j < 9 && elements[0][j+1] == MINESWEEPER_ELEMENT.MINE) count++; // look right
+                  if (j > 0 && elements[0][j-1] == MINESWEEPER_ELEMENT.MINE) count++; // look left
+                  insertTheNumber(count,0,j);
+              }
+          }
+        }
+        private void insertTheNumber(int count, int i, int j)
+        {
+            System.out.println("The count is " + count);
+            if (0 == count) return;
+            else
+            {
+                if      (1 == count) elements[i][j] = MINESWEEPER_ELEMENT.ONE;
+                else if (2 == count) elements[i][j] = MINESWEEPER_ELEMENT.TWO;
+                else if (2 == count) elements[i][j] = MINESWEEPER_ELEMENT.THREE;
+                else if (4 == count) elements[i][j] = MINESWEEPER_ELEMENT.FOUR;
+                else                 elements[i][j] = MINESWEEPER_ELEMENT.FIVE;
+            }
+        }
+        */
 
         private void insertMines(ArrayList<Integer> x, ArrayList<Integer> y)
         {
@@ -232,13 +359,11 @@ public class Minesweeper extends JFrame
                 x = getRandomNum();
                 y = getRandomNum();
                 for (int j = 0; j < X.size(); j++)
-                {
                     if (x == X.get(j) && y == Y.get(j))
                     {
                         areUnique = false;
                         break;
                     }
-                }
                 if (areUnique == true) { X.add(x); Y.add(y);}
                 else i--;
             }
@@ -256,7 +381,46 @@ public class Minesweeper extends JFrame
             if (elements[i][j] == MINESWEEPER_ELEMENT.MINE) return true;
             return false;
         }
-
+        public boolean isOne(int i, int j)
+        {
+            if (elements[i][j] == MINESWEEPER_ELEMENT.ONE) return true;
+            return false;
+        }
+        public boolean isTwo(int i, int j)
+        {
+            if (elements[i][j] == MINESWEEPER_ELEMENT.TWO) return true;
+            return false;
+        }
+        public boolean isThree(int i, int j)
+        {
+            if (elements[i][j] == MINESWEEPER_ELEMENT.THREE) return true;
+            return false;
+        }
+        public boolean isFour(int i, int j)
+        {
+            if (elements[i][j] == MINESWEEPER_ELEMENT.FOUR) return true;
+            return false;
+        }
+        public boolean isFive(int i, int j)
+        {
+            if (elements[i][j] == MINESWEEPER_ELEMENT.FIVE) return true;
+            return false;
+        }
+        public boolean isSix(int i, int j)
+        {
+            if (elements[i][j] == MINESWEEPER_ELEMENT.SIX) return true;
+            return false;
+        }
+        public boolean isSeven(int i, int j)
+        {
+            if (elements[i][j] == MINESWEEPER_ELEMENT.SEVEN) return true;
+            return false;
+        }
+        public boolean isEight(int i, int j)
+        {
+            if (elements[i][j] == MINESWEEPER_ELEMENT.EIGHT) return true;
+            return false;
+        }
         public MINESWEEPER_ELEMENT getElementAt(int i, int j)
         {
             return elements[i][j];
