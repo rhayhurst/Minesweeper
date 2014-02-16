@@ -164,7 +164,7 @@ public class Minesweeper extends JFrame
         private boolean reveal(int i, int j) // reveals what;s in the tile's location
         {
             MINESWEEPER_ELEMENT element = model.getElementAt(i,j);
-            if (element == MINESWEEPER_ELEMENT.BOMB)
+            if (element == MINESWEEPER_ELEMENT.MINE)
             {
                 buttons[i][j].setIcon(new ImageIcon("mine.png"));
                 return true;
@@ -179,7 +179,7 @@ public class Minesweeper extends JFrame
     } // end private inner class ButtonHandler
 
 
-    private enum MINESWEEPER_ELEMENT {ONE, TWO, THREE, FOUR, FIVE, QUESTION_MARK, BOMB, FLAG, BLANK};
+    private enum MINESWEEPER_ELEMENT {ONE, TWO, THREE, FOUR, FIVE, QUESTION_MARK, MINE, FLAG, BLANK};
     private class MinesweeperModel
     {
         private MINESWEEPER_ELEMENT[][] elements = new MINESWEEPER_ELEMENT[10][10];
@@ -188,34 +188,48 @@ public class Minesweeper extends JFrame
         // so we want to generate 10 random numbers
         public MinesweeperModel()
         {
-          //  ArrayList<Integer> ranNumArr = new ArrayList<Integer>();
-          //  ranNumArr = getTenRandomNumbers();
-          //  System.out.println("\n\nInside model asdfasdfasdfasdfasdfasdfasdf.\n\n");
-          //  for (int j = 0; j < 10; j++)
-          //  {
-          //      System.out.println(j + ": " + ranNumArr.get(j));
-          //  }
+            ArrayList<Integer> x = new ArrayList<Integer>();
+            ArrayList<Integer> y = new ArrayList<Integer>();
+            getTenRandomCoordinates(x, y);
+            for (int i = 0; i < 10; i++)
+            {
+                System.out.println(i + ":\tx: " + x.get(i) + "\ty: " + y.get(i));
+            }
+
             // give the array random values for bombs
+            insertMines(x,y);
+            /*
             for (int i = 0; i < 10; i++)
                 for (int j = 0; j < 10; j++)
                 {
                     if (i%2 == 0 && j%2 == 0) elements[i][j] = MINESWEEPER_ELEMENT.BOMB;   // TODO: randomize everything
                     else elements[i][j] = MINESWEEPER_ELEMENT.BLANK;
                 }
-
+            */
         }
-        public ArrayList getTenRandomNumbers()
+
+        private void insertMines(ArrayList<Integer> x, ArrayList<Integer> y)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                elements[x.get(i)][y.get(i)] = MINESWEEPER_ELEMENT.MINE;
+            }
+        }
+
+        public void getTenRandomCoordinates(ArrayList<Integer> x, ArrayList<Integer> y)
         {
             ArrayList<Integer> ranNumArr = new ArrayList<Integer>();
             Random seed = new Random();
             int num;
+
+            // get 10 random numbers
             for (int i = 0; i < 10; i++)
             {
                 num = 1 + seed.nextInt(100);
                 if (0 == i) ranNumArr.add(num);
                 else
                 {
-                    for (int j = 0; j < Array.getLength(ranNumArr); j++)
+                    for (int j = 0; j < ranNumArr.size(); j++)
                     {
                         if (ranNumArr.get(j) != num)
                         {
@@ -225,12 +239,18 @@ public class Minesweeper extends JFrame
                     }
                 }
             }
-            return ranNumArr;
+
+            // convert them to x, y coordinates (note: x horizontal (i), y vert (j),
+            for (int i = 0; i < 10; i++)
+            {
+                x.add((ranNumArr.get(i) - 1) % 10);
+                y.add((ranNumArr.get(i)-1)/10);
+            }
         }
 
         public boolean isBomb(int i, int j)
         {
-            if (elements[i][j] == MINESWEEPER_ELEMENT.BOMB) return true;
+            if (elements[i][j] == MINESWEEPER_ELEMENT.MINE) return true;
             return false;
         }
 
