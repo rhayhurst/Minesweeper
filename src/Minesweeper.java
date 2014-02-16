@@ -171,7 +171,7 @@ public class Minesweeper extends JFrame
             }
             else
             {
-                buttons[i][j].setIcon(new ImageIcon("exposedTile.png"));
+                buttons[i][j].setIcon(new ImageIcon("aTile.ico"));
                 return false;
             }
         }
@@ -188,13 +188,13 @@ public class Minesweeper extends JFrame
         // so we want to generate 10 random numbers
         public MinesweeperModel()
         {
-            ArrayList<Integer> ranNumArr = new ArrayList<Integer>();
-            ranNumArr = getTenRandomNumbers();
-            System.out.println("\n\nInside model asdfasdfasdfasdfasdfasdfasdf.\n\n");
-            for (int j = 0; j < 10; j++)
-            {
-                System.out.println(j + ": " + ranNumArr.get(j));
-            }
+          //  ArrayList<Integer> ranNumArr = new ArrayList<Integer>();
+          //  ranNumArr = getTenRandomNumbers();
+          //  System.out.println("\n\nInside model asdfasdfasdfasdfasdfasdfasdf.\n\n");
+          //  for (int j = 0; j < 10; j++)
+          //  {
+          //      System.out.println(j + ": " + ranNumArr.get(j));
+          //  }
             // give the array random values for bombs
             for (int i = 0; i < 10; i++)
                 for (int j = 0; j < 10; j++)
