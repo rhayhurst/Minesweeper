@@ -171,7 +171,7 @@ public class Minesweeper extends JFrame
             }
             else
             {
-                buttons[i][j].setIcon(new ImageIcon("revealedTile.png"));
+                buttons[i][j].setIcon(new ImageIcon("exposedTile.png"));
                 return false;
             }
         }
