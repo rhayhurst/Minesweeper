@@ -70,7 +70,22 @@ import java.util.Random;
  * either a tile is hit or the end of the row is hit.
  *
  * That's it for the time being.
- */
+ *
+ *
+ *
+ *
+ * Moving right along.......
+ *
+ * todo: -if right click,
+ * todo:          - add flag on button[i][j] if odd numbered click,
+ * todo:          - add question mark if even numbered click
+ * todo: -if left click,
+ * todo:          - if button[i][j] == number, show number.
+ * todo:          - If button[i][j] == empty, run algorithm that opens up squares
+ * todo:          - if button[i][j] == bomb, reveal all bombs, end timer, end game
+ *
+ * todo: start a timer when the first square is clicked
+ * */
 
 
 
@@ -285,56 +300,6 @@ public class Minesweeper extends JFrame
             if (elements[i][j] == MINESWEEPER_ELEMENT.MINE) return 1;
             else return 0;
         }
-
-   /*     private void bottomRow()
-        {
-            int count = 0;
-            for (int j = 0; j < 10; j++)
-            {
-                if (elements[j][9] == MINESWEEPER_ELEMENT.MINE) continue;
-                else
-                {
-                    if (           elements[8][j] == MINESWEEPER_ELEMENT.MINE) count++; // look up
-                    if (j < 9 && elements[9][j+1] == MINESWEEPER_ELEMENT.MINE) count++; // look right
-                    if (j > 0 && elements[9][j-1] == MINESWEEPER_ELEMENT.MINE) count++; // look left
-                    insertTheNumber(count,9,j);
-                }
-            }
-        }
-
-
-        private void topRow()
-        {
-          int count = 0;
-          for (int j = 0; j < 10; j++)
-          {
-              if (elements[0][j] == MINESWEEPER_ELEMENT.MINE) continue;
-              else
-              {
-                  if (j < 9 && elements[0][j+1] == MINESWEEPER_ELEMENT.MINE) count++; // look right
-
-
-                  if (           elements[1][j] == MINESWEEPER_ELEMENT.MINE) count++; // look down
-                  if (j < 9 && elements[0][j+1] == MINESWEEPER_ELEMENT.MINE) count++; // look right
-                  if (j > 0 && elements[0][j-1] == MINESWEEPER_ELEMENT.MINE) count++; // look left
-                  insertTheNumber(count,0,j);
-              }
-          }
-        }
-        private void insertTheNumber(int count, int i, int j)
-        {
-            System.out.println("The count is " + count);
-            if (0 == count) return;
-            else
-            {
-                if      (1 == count) elements[i][j] = MINESWEEPER_ELEMENT.ONE;
-                else if (2 == count) elements[i][j] = MINESWEEPER_ELEMENT.TWO;
-                else if (2 == count) elements[i][j] = MINESWEEPER_ELEMENT.THREE;
-                else if (4 == count) elements[i][j] = MINESWEEPER_ELEMENT.FOUR;
-                else                 elements[i][j] = MINESWEEPER_ELEMENT.FIVE;
-            }
-        }
-        */
 
         private void insertMines(ArrayList<Integer> x, ArrayList<Integer> y)
         {
