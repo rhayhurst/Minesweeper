@@ -1,7 +1,10 @@
 import javax.swing.*;
+import javax.swing.Icon;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -13,13 +16,13 @@ import java.util.Random;
  * So what is the idea here?
  * I'll go through the code, but first, I want to explain the idea of a "model".
  * There are going to be two 10 x 10 grids in this program.  The first one is going to be the
- * JButton grid.  This will be the GUI grid, which will show everything on the screen.
+ * ButtonExtender grid.  This will be the GUI grid, which will show everything on the screen.
  * The second 10 x 10 grid is going to be the model grid, which will keep all of the data about the
  * game -- think of it like a board that only us programmers can see, where everything is revealed already.
  * Here's a way to illustrate what the model is for: when we first start the game, we will go to the model and
  * randomly place 10 mines around the board.  Then, based on where those mines are, we will place our numbers.
  * The rest of the squares on the board will be blank.
- * That's what WE see.  What the player sees is the JFrame -- the grid of JButtons, all set to a blank tile.
+ * That's what WE see.  What the player sees is the JFrame -- the grid of ButtonExtenders, all set to a blank tile.
  * So when the player clicks on a square, we call the "handler".  It goes to the model and looks at the tile
  * that the player clicked and the button that the player clicked, different things will happen (a flag will
  * be placed, a question mark will be placed, the algorithm that reveals empty squares and numbers will run,
@@ -37,9 +40,9 @@ import java.util.Random;
  * So the entire program takes place within those two lines!
  * So the rest of the program MUST take place within the constructor of the application.  And it does.
  *
- * The next two lines create instances of the "MinesweeperModel" and an array of type "JButton",
+ * The next two lines create instances of the "MinesweeperModel" and an array of type "ButtonExtender",
  * We'll get to what the model is in a moment.
- * The array of JButton is just that -- an array of buttons, which are little windows inside of the container.
+ * The array of ButtonExtender is just that -- an array of buttons, which are little windows inside of the container.
  * The container is the entire window.
  * That means that the buttons are each square in the Minesweeper game, and we now have 100 of them.  Perfect.
  *
@@ -85,6 +88,10 @@ import java.util.Random;
  * todo:          - if button[i][j] == bomb, reveal all bombs, end timer, end game
  *
  * todo: start a timer when the first square is clicked
+ *
+ * Click on a swuare,  If there is nothing there -- no numners, nothing, then the algortihm
+ * starts.
+ * irst, check top left.
  * */
 
 
@@ -99,7 +106,7 @@ public class Minesweeper extends JFrame
 
     // give the Minesweeper the Minesweeper Model data
     private MinesweeperModel model = new MinesweeperModel();
-    private JButton [][] buttons = new JButton[10][10];
+    private ButtonExtender [][] buttons = new ButtonExtender[10][10];
 
     // set up GUI
     public Minesweeper()
@@ -113,19 +120,22 @@ public class Minesweeper extends JFrame
         // create buttons
         Icon tile = new ImageIcon("tile.png");
 
-        // create an instance of inner class ButtonHandler
-        // to use for button event handling
-        ButtonHandler handler = new ButtonHandler(); // use this is the for loop, too
+        // create an instance of inner class HandlerClass
+        // to use for mouse event handling
+        HandlerClass handler = new HandlerClass(); // use this is the for loop, too
 
 
+
+        // this goes through and creates all of the buttons
         for (int i = 0; i < 10; i++)
             for (int j = 0; j < 10; j++)
             {
-                JButton button = new JButton(tile);
+                ButtonExtender button = new ButtonExtender(tile);
                 container.add(button);
                 buttons[i][j] = button;
-                button.addActionListener(handler);
+                button.addMouseListener(handler);
                 button.setSize(20, 20);
+                button.setUsed(false);
             }
 
         setSize( 600, 600 );
@@ -135,59 +145,89 @@ public class Minesweeper extends JFrame
 
 
     // inner class for button event handling
-    private class ButtonHandler implements ActionListener {
-
+    private class HandlerClass implements MouseListener
+    {
         // handle button event
-        public void actionPerformed( ActionEvent event )
+        public void mousePressed(MouseEvent event)
         {
-            JButton button = (JButton) event.getSource();
-            for (int i = 0; i < 10; i ++)
-                for (int j = 0; j < 10; j++)
-                {
-                    if (button == buttons[i][j])
+            if (SwingUtilities.isLeftMouseButton(event))
+            {
+                ButtonExtender button = (ButtonExtender) event.getSource();
+                for (int i = 0; i < 10; i ++)
+                    for (int j = 0; j < 10; j++)
                     {
-                        if (model.isBomb(i,j))
+                        if (button == buttons[i][j])
                         {
-                            button.setIcon(new ImageIcon("mine.png"));
+                            if (model.isBomb(i,j))
+                            {
+                                button.setIcon(new ImageIcon("mine.png"));
+                                button.setUsed(true);
+                                // code to write BOOOM! goes here
+                                break;
+                            }
+                            else if (model.isOne(i,j))
+                            {
+                                button.setIcon(new ImageIcon("one.png"));
+                                button.setUsed(true);
+                            }
+                            else if (model.isTwo(i,j))
+                            {
+                                button.setIcon(new ImageIcon("two.png"));
+                                button.setUsed(true);
+                            }
+                            else if (model.isThree(i,j))
+                            {
+                                button.setIcon(new ImageIcon("three.png"));
+                                button.setUsed(true);
+                            }
+                            else if (model.isFour(i,j))
+                            {
+                                button.setIcon(new ImageIcon("four.png"));
+                                button.setUsed(true);
+                            }
+                            else if (model.isFive(i,j))
+                            {
+                                button.setIcon(new ImageIcon("five.png"));
+                                button.setUsed(true);
+                            }
+                            else if (model.isSix(i,j))
+                            {
+                                button.setIcon(new ImageIcon("six.png"));
+                                button.setUsed(true);
+                            }
+                            else if (model.isSeven(i,j))
+                            {
+                                button.setIcon(new ImageIcon("seven.png"));
+                                button.setUsed(true);
+                            }
+                            else if (model.isEight(i,j))
+                            {
+                                button.setIcon(new ImageIcon("eight.png"));
+                                button.setUsed(true);
+                            }
+                            sweepForward(i,j);
                             break;
                         }
-                        else if (model.isOne(i,j))
-                        {
-                            button.setIcon(new ImageIcon("one.png"));
-                        }
-                        else if (model.isTwo(i,j))
-                        {
-                            button.setIcon(new ImageIcon("two.png"));
-                        }
-                        else if (model.isThree(i,j))
-                        {
-                            button.setIcon(new ImageIcon("three.png"));
-                        }
-                        else if (model.isFour(i,j))
-                        {
-                            button.setIcon(new ImageIcon("four.png"));
-                        }
-                        else if (model.isFive(i,j))
-                        {
-                            button.setIcon(new ImageIcon("five.png"));
-                        }
-                        else if (model.isSix(i,j))
-                        {
-                            button.setIcon(new ImageIcon("six.png"));
-                        }
-                        else if (model.isSeven(i,j))
-                        {
-                            button.setIcon(new ImageIcon("seven.png"));
-                        }
-                        else if (model.isEight(i,j))
-                        {
-                            button.setIcon(new ImageIcon("eight.png"));
-                        }
-                        sweepForward(i,j);
-                        break;
                     }
-                }
+            }
+            else if (SwingUtilities.isRightMouseButton(event))
+            {
+                ButtonExtender button = (ButtonExtender) event.getSource();
+                for (int i = 0; i < 10; i ++)
+                    for (int j = 0; j < 10; j++)
+                    {
+                        boolean val = button.getIsUsed();
+                        if (!val) button.setIcon(new ImageIcon("flag.png"));
+                    }
+            }
         }
+
+        private boolean showTileAsDisplayed(int i, int j)
+        {
+
+            return false;
+        }
+
 
         private void sweepForward(int i, int j)
         {
@@ -227,12 +267,26 @@ public class Minesweeper extends JFrame
             }
         }
 
-    } // end private inner class ButtonHandler
+        @Override
+        public void mouseClicked(MouseEvent mouseEvent) {}
+
+    /*    @Override
+        public void mousePressed(MouseEvent mouseEvent) {}*/
+
+        @Override
+        public void mouseReleased(MouseEvent mouseEvent) {}
+
+        @Override
+        public void mouseEntered(MouseEvent mouseEvent) {}
+
+        @Override
+        public void mouseExited(MouseEvent mouseEvent) {}
+    } // end private inner class HandlerClass
 
 
     private enum MINESWEEPER_ELEMENT {ONE, TWO, THREE, FOUR, FIVE, SIX,SEVEN, 
                                       EIGHT, QUESTION_MARK, MINE, FLAG, BLANK};
-    private class MinesweeperModel
+    public class MinesweeperModel
     {
         private MINESWEEPER_ELEMENT[][] elements = new MINESWEEPER_ELEMENT[10][10];
 
