@@ -153,6 +153,7 @@ public class Minesweeper extends JFrame
             if (SwingUtilities.isLeftMouseButton(event))
             {
                 ButtonExtender button = (ButtonExtender) event.getSource();
+                button.setNumRightClicks(1);
                 for (int i = 0; i < 10; i ++)
                     for (int j = 0; j < 10; j++)
                     {
@@ -217,17 +218,18 @@ public class Minesweeper extends JFrame
                     for (int j = 0; j < 10; j++)
                     {
                         boolean val = button.getIsUsed();
-                        if (!val) button.setIcon(new ImageIcon("flag.png"));
+                        int n = button.getNumRightClicks();
+                        if (!val)
+                        {
+                            if (n%3 == 1) button.setIcon(new ImageIcon("questionMark.png")); // ?
+                            if (n%3 == 2) button.setIcon(new ImageIcon("tile.png")); // tile
+                            if (n%3 == 0) button.setIcon(new ImageIcon("flag.png"));
+                            break;
+                        }
                     }
+                button.setNumRightClicks(button.getNumRightClicks()+1); // iterates the num of rt clicks
             }
         }
-
-        private boolean showTileAsDisplayed(int i, int j)
-        {
-
-            return false;
-        }
-
 
         private void sweepForward(int i, int j)
         {
@@ -284,8 +286,7 @@ public class Minesweeper extends JFrame
     } // end private inner class HandlerClass
 
 
-    private enum MINESWEEPER_ELEMENT {ONE, TWO, THREE, FOUR, FIVE, SIX,SEVEN, 
-                                      EIGHT, QUESTION_MARK, MINE, FLAG, BLANK};
+    private enum MINESWEEPER_ELEMENT {ONE, TWO, THREE, FOUR, FIVE, SIX,SEVEN, EIGHT, MINE};
     public class MinesweeperModel
     {
         private MINESWEEPER_ELEMENT[][] elements = new MINESWEEPER_ELEMENT[10][10];
