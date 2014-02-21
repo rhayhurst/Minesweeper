@@ -240,18 +240,18 @@ public class Minesweeper extends JFrame
 
 
 
-        private void openSquares(int i, int j)
+        private void openSquares(int row, int col)
         {
-            System.out.println("I = " + i + " j = " + j);
-            buttons[i][j].setIcon(new ImageIcon("greyed.gif"));
-            if (i > 0 && j > 0) lookAtButton(i-1, j-1);
-            if (i > 0) lookAtButton(i-1,j);
-            if (i > 0 && j < 9) lookAtButton(i-1,j+1);
-            if (j < 9) lookAtButton(i,j+1);
-            if (i < 9 && j < 9)lookAtButton(i+1,j+1);
-            if (i < 9) lookAtButton(i+1,j);
-            if (i < 9 && j > 0)lookAtButton(i+1,j-1);
-            if (j > 0) lookAtButton(i,j-1);
+            System.out.println("I = " + row + " j = " + col);
+            buttons[row][col].setIcon(new ImageIcon("greyed.gif"));
+            if (row > 0 && col > 0) lookAtButton(row-1, col-1);
+            if (row > 0) lookAtButton(row-1,col);
+            if (row > 0 && col < 9) lookAtButton(row-1,col+1);
+            if (col < 9) lookAtButton(row,col+1);
+            if (row < 9 && col < 9)lookAtButton(row+1,col+1);
+            if (row < 9) lookAtButton(row+1,col);
+            if (row < 9 && col > 0)lookAtButton(row+1,col-1);
+            if (col > 0) lookAtButton(row,col-1);
 
         }
         private void lookAtButton(int i, int j)
