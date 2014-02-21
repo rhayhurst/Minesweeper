@@ -85,7 +85,12 @@ import java.util.Random;
  * todo: -if left click,
  * todo:          - if button[i][j] == number, show number.
  * todo:          - If button[i][j] == empty, run algorithm that opens up squares
- * todo:          - if button[i][j] == bomb, reveal all bombs, end timer, end game
+ *
+ *
+ * todo: Feb 20th
+ * todo: if button[i][j] == bomb, reveal all bombs, end timer, end game
+ * todo:
+ * todo:
  *
  * todo: start a timer when the first square is clicked
  *
@@ -135,6 +140,8 @@ public class Minesweeper extends JFrame
                 buttons[i][j] = button;
                 button.addMouseListener(handler);
                 button.setSize(20, 20);
+                button.setLocationI(i);
+                button.setLocationJ(j);
                 button.setUsed(false);
             }
 
@@ -154,62 +161,62 @@ public class Minesweeper extends JFrame
             {
                 ButtonExtender button = (ButtonExtender) event.getSource();
                 button.setNumRightClicks(1);
-                for (int i = 0; i < 10; i ++)
-                    for (int j = 0; j < 10; j++)
+                int i = button.getLocationI();
+                int j = button.getLocationJ();
+                if (button == buttons[i][j])
+                {
+                    if (model.isBomb(i,j))
                     {
-                        if (button == buttons[i][j])
-                        {
-                            if (model.isBomb(i,j))
-                            {
-                                button.setIcon(new ImageIcon("mine.png"));
-                                button.setUsed(true);
-                                // code to write BOOOM! goes here
-                                break;
-                            }
-                            else if (model.isOne(i,j))
-                            {
-                                button.setIcon(new ImageIcon("one.png"));
-                                button.setUsed(true);
-                            }
-                            else if (model.isTwo(i,j))
-                            {
-                                button.setIcon(new ImageIcon("two.png"));
-                                button.setUsed(true);
-                            }
-                            else if (model.isThree(i,j))
-                            {
-                                button.setIcon(new ImageIcon("three.png"));
-                                button.setUsed(true);
-                            }
-                            else if (model.isFour(i,j))
-                            {
-                                button.setIcon(new ImageIcon("four.png"));
-                                button.setUsed(true);
-                            }
-                            else if (model.isFive(i,j))
-                            {
-                                button.setIcon(new ImageIcon("five.png"));
-                                button.setUsed(true);
-                            }
-                            else if (model.isSix(i,j))
-                            {
-                                button.setIcon(new ImageIcon("six.png"));
-                                button.setUsed(true);
-                            }
-                            else if (model.isSeven(i,j))
-                            {
-                                button.setIcon(new ImageIcon("seven.png"));
-                                button.setUsed(true);
-                            }
-                            else if (model.isEight(i,j))
-                            {
-                                button.setIcon(new ImageIcon("eight.png"));
-                                button.setUsed(true);
-                            }
-                            sweepForward(i,j);
-                            break;
-                        }
+                        int count = 0;
+                        button.setIcon(new ImageIcon("mine.png"));
+                        for (int k = 0; k < 10; k++)
+                            for (int l = 0; l < 10; l++)
+                                if (model.isBomb(k,l) && (k != i || l != j))
+                                    buttons[k][l].setIcon(new ImageIcon("unexplodedBomb.png"));
                     }
+
+                    else if (model.isOne(i,j))
+                    {
+                        button.setIcon(new ImageIcon("one.png"));
+                        button.setUsed(true);
+                    }
+                    else if (model.isTwo(i,j))
+                    {
+                        button.setIcon(new ImageIcon("two.png"));
+                        button.setUsed(true);
+                    }
+                    else if (model.isThree(i,j))
+                    {
+                        button.setIcon(new ImageIcon("three.png"));
+                        button.setUsed(true);
+                    }
+                    else if (model.isFour(i,j))
+                    {
+                        button.setIcon(new ImageIcon("four.png"));
+                        button.setUsed(true);
+                    }
+                    else if (model.isFive(i,j))
+                    {
+                        button.setIcon(new ImageIcon("five.png"));
+                        button.setUsed(true);
+                    }
+                    else if (model.isSix(i,j))
+                    {
+                        button.setIcon(new ImageIcon("six.png"));
+                        button.setUsed(true);
+                    }
+                    else if (model.isSeven(i,j))
+                    {
+                        button.setIcon(new ImageIcon("seven.png"));
+                        button.setUsed(true);
+                    }
+                    else if (model.isEight(i,j))
+                    {
+                        button.setIcon(new ImageIcon("eight.png"));
+                        button.setUsed(true);
+                    }
+                 else  sweepForward(i,j);
+                }
             }
             else if (SwingUtilities.isRightMouseButton(event))
             {
@@ -230,6 +237,8 @@ public class Minesweeper extends JFrame
                 button.setNumRightClicks(button.getNumRightClicks()+1); // iterates the num of rt clicks
             }
         }
+
+
 
         private void sweepForward(int i, int j)
         {

@@ -25,4 +25,23 @@ public class ButtonExtender extends JButton
     public void setNumRightClicks(int numRightClicks) {
         this.numRightClicks = numRightClicks;
     }
+
+    private int locationI;
+    private int locationJ;
+
+    public int getLocationI() {
+        return locationI;
+    }
+
+    public void setLocationI(int locationI) {
+        this.locationI = locationI;
+    }
+
+    public int getLocationJ() {
+        return locationJ;
+    }
+
+    public void setLocationJ(int locationJ) {
+        this.locationJ = locationJ;
+    }
 }
