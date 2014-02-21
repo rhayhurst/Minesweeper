@@ -215,7 +215,7 @@ public class Minesweeper extends JFrame
                         button.setIcon(new ImageIcon("eight.png"));
                         button.setUsed(true);
                     }
-                 else  sweepForward(i,j);
+                 else  openSquares(i, j);
                 }
             }
             else if (SwingUtilities.isRightMouseButton(event))
@@ -240,23 +240,45 @@ public class Minesweeper extends JFrame
 
 
 
-        private void sweepForward(int i, int j)
+        private void openSquares(int i, int j)
         {
-            System.out.println("HI THERE!");
+            System.out.println("I = " + i + " j = " + j);
+            buttons[i][j].setIcon(new ImageIcon("greyed.gif"));
+            if (i > 0 && j > 0) lookAtButton(i-1, j-1);
+            if (i > 0) lookAtButton(i-1,j);
+            if (i > 0 && j < 9) lookAtButton(i-1,j+1);
+            if (j < 9) lookAtButton(i,j+1);
+            if (i < 9 && j < 9)lookAtButton(i+1,j+1);
+            if (i < 9) lookAtButton(i+1,j);
+            if (i < 9 && j > 0)lookAtButton(i+1,j-1);
+            if (j > 0) lookAtButton(i,j-1);
 
-        /*    boolean isBomb = false;
-            boolean isOne = false;
-            while (!isBomb)
-            {
-                isBomb = reveal(i,j);
-                if (j%10 != 0) j++;
-                else
-                {
-                    j = 0; i++;
-                }
-
-            }*/
         }
+        private void lookAtButton(int i, int j)
+        {
+            if (buttons[i][j].getIsUsed())
+            {
+                if      (model.isOne(i, j))   buttons[i][j].setIcon(new ImageIcon("one.png"));
+                else if (model.isTwo(i, j))   buttons[i][j].setIcon(new ImageIcon("two.png"));
+                else if (model.isThree(i,j)) buttons[i][j].setIcon(new ImageIcon("three.png"));
+                else if (model.isFour(i,j))  buttons[i][j].setIcon(new ImageIcon("four.png"));
+                else if (model.isFive(i,j))  buttons[i][j].setIcon(new ImageIcon("five.png"));
+                else if (model.isSix(i, j))   buttons[i][j].setIcon(new ImageIcon("six.png"));
+                else if (model.isSeven(i, j)) buttons[i][j].setIcon(new ImageIcon("seven.png"));
+                else if (model.isEight(i,j)) buttons[i][j].setIcon(new ImageIcon("eight.png"));
+            }
+            else openSquares(i,j);
+        }
+    /*    if (i > 0 && j > 0) { int localCount = lookForMine(i-1,j-1); count += localCount;} // look upper left
+        if (i > 0)          { int localCount = lookForMine(i-1,j);   count += localCount;} // look up
+        if (i > 0 && j < 9) { int localCount = lookForMine(i-1,j+1); count += localCount;} // look upper right
+        if (j < 9)          { int localCount = lookForMine(i,j+1);   count += localCount;} // look right
+        if (i < 9 && j < 9) { int localCount = lookForMine(i+1,j+1); count += localCount;} // look lower right
+        if (i < 9)          { int localCount = lookForMine(i+1,j);   count += localCount;} // look down
+        if (i < 9 && j > 0) { int localCount = lookForMine(i+1,j-1); count += localCount;} // look lower left
+        if (j > 0)          { int localCount = lookForMine(i,j-1);   count += localCount;} // look left
+        // insert the number into the grid*/
+
 
         private boolean reveal(int i, int j) // reveals what;s in the tile's location
         {
