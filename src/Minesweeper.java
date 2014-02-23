@@ -1,34 +1,93 @@
 import javax.swing.*;
-import javax.swing.Icon;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Random;
 
 /**
  * Created by bob on 2/15/14.
  */
+
 /*
- * todo: - have the game end when the user hits a mine
- * todo: - create a container that will contain two windows.  The container can have
- * todo:   type "flowlayout" (or whatever one allows you to place things "north", "center", etc.
- * todo: - create a third window that fits into the "masterWindow".  Create three displays for this
- * todo:   window.  It will eventually hold three pieces of data:
- * todo:   (1) data that shows the number of mines versus the number of flags placed (so, "x/10")
- * todo:   (2) a reset button.  Perhaps the happy face?  Restarts the entire game.
- * todo:   (3) a timer that starts when the first button is clicked and ends when the first mine is found
- * todo: - Two drop down menus.
- * todo    (1) Game: The "Game" down menus will have three buttons:
- * todo        i- Reset:  resets the game.  You will be able to hit the button and hit "r" to reset
- * todo       ii- Top Ten: this is a whole lot of stuff
- * todo      iii- eXit:  you will be able to hit the button and hit "x" to exit
- * todo     (2) Help
- * todo:       i- help:  will give a little text for help
- * todo:      ii- about:  a simple about screen
- */
+ * So what is the idea here?
+ * I'll go through the code, but first, I want to explain the idea of a "model".
+ * There are going to be two 10 x 10 grids in this program.  The first one is going to be the
+ * JButton grid.  This will be the GUI grid, which will show everything on the screen.
+ * The second 10 x 10 grid is going to be the model grid, which will keep all of the data about the
+ * game -- think of it like a board that only us programmers can see, where everything is revealed already.
+ * Here's a way to illustrate what the model is for: when we first start the game, we will go to the model and
+ * randomly place 10 mines around the board.  Then, based on where those mines are, we will place our numbers.
+ * The rest of the squares on the board will be blank.
+ * That's what WE see.  What the player sees is the JFrame -- the grid of JButtons, all set to a blank tile.
+ * So when the player clicks on a square, we call the "handler".  It goes to the model and looks at the tile
+ * that the player clicked and the button that the player clicked, different things will happen (a flag will
+ * be placed, a question mark will be placed, the algorithm that reveals empty squares and numbers will run,
+ * ot a bomb will explode, ending the game).
+ *
+ * Ok.  Now that that's done, let's go through the code...
+ *
+ * First we create a class called Minesweeper.  Notice that it "extends" the JFrame class.
+ * This is because we are inheriting the JFrame class, the class that has all of the gui stuff
+ * in it.
+ *
+ * Then we create a main, and in that main, we create an instance of Minesweeper called "application."
+ * Then we see the "setDefault... EXIT_ON_CLOSE".  This means that when this line is done -- the user
+ * has hit the "X" button, closing the window -- that the program is finished.
+ * So the entire program takes place within those two lines!
+ * So the rest of the program MUST take place within the constructor of the application.  And it does.
+ *
+ * The next two lines create instances of the "MinesweeperModel" and an array of type "JButton",
+ * We'll get to what the model is in a moment.
+ * The array of JButton is just that -- an array of buttons, which are little windows inside of the container.
+ * The container is the entire window.
+ * That means that the buttons are each square in the Minesweeper game, and we now have 100 of them.  Perfect.
+ *
+ * Next we get into the constructor of Minesweeper.  The line "super(MineSweeper)" just puts the words "Minesweeper"
+ * at the top of the container.  We can always change that to whatever.  Yonathens's Minesweeper or something.
+ *
+ * Line:
+ * Next we create the container, and set the container to a layout style.  I chose "GridLayout" because that seemed
+ * about right.
+ *
+ * Line:
+ * Create an empty tile -- 100 of these, what the grid looks like at the beginning fo the game.
+ *
+ * Line:
+ * Create the buttonHandler.  This does exactly what it says it does.
+ *
+ * Line:
+ * Then we create a nested for loop, and put in 100 buttons.  We set them all to "tile", as that's all
+ * that we want visible.  We also set the size of the button and add the button handler, which listens
+ * to each button.
+ *
+ * At the moment, we only have three different kind of tiles utillized:  a mine icon, a tile icon, and a "greyed"
+ * icon (meaning that there is neither a bomb nor a number in the square, and that is has been checked).
+ *
+ * As of this moment, the only thing the code does is this:  it looks at a tile.  If that tile has a mine in it,
+ * then the mine is revealed.  If that tile does NOT have a mine in it, then a process starts:  first, the tile
+ * is "greyed out", and the process checks the tile to the right and repeats the process.  The process stops when
+ * either a tile is hit or the end of the row is hit.
+ *
+ * That's it for the time being.
+ *
+ *
+ *
+ *
+ * Moving right along.......
+ *
+ * todo: -if right click,
+ * todo:          - add flag on button[i][j] if odd numbered click,
+ * todo:          - add question mark if even numbered click
+ * todo: -if left click,
+ * todo:          - if button[i][j] == number, show number.
+ * todo:          - If button[i][j] == empty, run algorithm that opens up squares
+ * todo:          - if button[i][j] == bomb, reveal all bombs, end timer, end game
+ *
+ * todo: start a timer when the first square is clicked
+ * */
+
+
 
 public class Minesweeper extends JFrame
 {
@@ -40,7 +99,7 @@ public class Minesweeper extends JFrame
 
     // give the Minesweeper the Minesweeper Model data
     private MinesweeperModel model = new MinesweeperModel();
-    private ButtonExtender [][] buttons = new ButtonExtender[10][10];
+    private JButton [][] buttons = new JButton[10][10];
 
     // set up GUI
     public Minesweeper()
@@ -54,219 +113,126 @@ public class Minesweeper extends JFrame
         // create buttons
         Icon tile = new ImageIcon("tile.png");
 
-        // create an instance of inner class HandlerClass
-        // to use for mouse event handling
-        HandlerClass handler = new HandlerClass(); // use this is the for loop, too
+        // create an instance of inner class ButtonHandler
+        // to use for button event handling
+        ButtonHandler handler = new ButtonHandler(); // use this is the for loop, too
 
 
-
-        // this goes through and creates all of the buttons
         for (int i = 0; i < 10; i++)
             for (int j = 0; j < 10; j++)
             {
-                ButtonExtender button = new ButtonExtender(tile);
+                JButton button = new JButton(tile);
                 container.add(button);
                 buttons[i][j] = button;
-                button.addMouseListener(handler);
+                button.addActionListener(handler);
                 button.setSize(20, 20);
-                button.setLocationI(i);
-                button.setLocationJ(j);
-                button.setUsed(false);
             }
 
         setSize( 600, 600 );
         setVisible( true );
-        setIsNumBombTile();
 
     } // end Minesweeper constructor
 
-    private void setIsNumBombTile()
-    {
-        for (int i = 0; i < 10; i++)
-            for(int j = 0; j < 10; j++)
-            {
-                if (model.isOne(i,j)  || model.isTwo(i,j) || model.isThree(i,j) || model.isFour(i,j) ||
-                        model.isFive(i,j) || model.isSix(i,j) || model.isSeven(i,j) || model.isEight(i,j))
-                    buttons[i][j].setNum(true);
-                else if (model.isBomb(i,j)) buttons[i][j].setBomb(true);
-                else buttons[i][j].setTile(true);
-            }
-    }
-
 
     // inner class for button event handling
-    private class HandlerClass implements MouseListener
-    {
-        // handle button event
-        public void mousePressed(MouseEvent event)
-        {
-            if (SwingUtilities.isLeftMouseButton(event))
-            {
-                ButtonExtender button = (ButtonExtender) event.getSource();
-                button.setNumRightClicks(1);
-                int i = button.getLocationI();
-                int j = button.getLocationJ();
-                if (button == buttons[i][j])
-                {
-                    if (model.isBomb(i,j))
-                    {
-                        int count = 0;
-                        button.setIcon(new ImageIcon("mine.png"));
-                        for (int k = 0; k < 10; k++)
-                            for (int l = 0; l < 10; l++)
-                                if (model.isBomb(k,l) && (k != i || l != j))
-                                    buttons[k][l].setIcon(new ImageIcon("unexplodedBomb.png"));
-                    }
+    private class ButtonHandler implements ActionListener {
 
-                    else if (model.isOne(i,j))
+        // handle button event
+        public void actionPerformed( ActionEvent event )
+        {
+            JButton button = (JButton) event.getSource();
+            for (int i = 0; i < 10; i ++)
+                for (int j = 0; j < 10; j++)
+                {
+                    if (button == buttons[i][j])
                     {
-                        button.setIcon(new ImageIcon("one.png"));
-                        button.setUsed(true);
-                    }
-                    else if (model.isTwo(i,j))
-                    {
-                        button.setIcon(new ImageIcon("two.png"));
-                        button.setUsed(true);
-                    }
-                    else if (model.isThree(i,j))
-                    {
-                        button.setIcon(new ImageIcon("three.png"));
-                        button.setUsed(true);
-                    }
-                    else if (model.isFour(i,j))
-                    {
-                        button.setIcon(new ImageIcon("four.png"));
-                        button.setUsed(true);
-                    }
-                    else if (model.isFive(i,j))
-                    {
-                        button.setIcon(new ImageIcon("five.png"));
-                        button.setUsed(true);
-                    }
-                    else if (model.isSix(i,j))
-                    {
-                        button.setIcon(new ImageIcon("six.png"));
-                        button.setUsed(true);
-                    }
-                    else if (model.isSeven(i,j))
-                    {
-                        button.setIcon(new ImageIcon("seven.png"));
-                        button.setUsed(true);
-                    }
-                    else if (model.isEight(i,j))
-                    {
-                        button.setIcon(new ImageIcon("eight.png"));
-                        button.setUsed(true);
-                    }
-                    else
-                    {
-                        System.out.println("Need to install opening algorithm");
-                        //openSquares(i, j);
-                    }
-                }
-            }
-            else if (SwingUtilities.isRightMouseButton(event))
-            {
-                ButtonExtender button = (ButtonExtender) event.getSource();
-                for (int i = 0; i < 10; i ++)
-                    for (int j = 0; j < 10; j++)
-                    {
-                        boolean val = button.getIsUsed();
-                        int n = button.getNumRightClicks();
-                        if (!val)
+                        if (model.isBomb(i,j))
                         {
-                            if (n%3 == 1) button.setIcon(new ImageIcon("questionMark.png")); // ?
-                            if (n%3 == 2) button.setIcon(new ImageIcon("tile.png")); // tile
-                            if (n%3 == 0) button.setIcon(new ImageIcon("flag.png"));
+                            button.setIcon(new ImageIcon("mine.png"));
                             break;
                         }
+                        else if (model.isOne(i,j))
+                        {
+                            button.setIcon(new ImageIcon("one.png"));
+                        }
+                        else if (model.isTwo(i,j))
+                        {
+                            button.setIcon(new ImageIcon("two.png"));
+                        }
+                        else if (model.isThree(i,j))
+                        {
+                            button.setIcon(new ImageIcon("three.png"));
+                        }
+                        else if (model.isFour(i,j))
+                        {
+                            button.setIcon(new ImageIcon("four.png"));
+                        }
+                        else if (model.isFive(i,j))
+                        {
+                            button.setIcon(new ImageIcon("five.png"));
+                        }
+                        else if (model.isSix(i,j))
+                        {
+                            button.setIcon(new ImageIcon("six.png"));
+                        }
+                        else if (model.isSeven(i,j))
+                        {
+                            button.setIcon(new ImageIcon("seven.png"));
+                        }
+                        else if (model.isEight(i,j))
+                        {
+                            button.setIcon(new ImageIcon("eight.png"));
+                        }
+                        sweepForward(i,j);
+                        break;
                     }
-                button.setNumRightClicks(button.getNumRightClicks()+1); // iterates the num of rt clicks
-            }
-        }
-
-
-
-        private void openSquares(int row, int col)
-        {
-            floodFill(col, row);
-        }
-        private void floodFill(int col, int row)
-        {
-            if (buttons[row][col].isBomb()) return;
-            else if (!buttons[row][col].getIsUsed())
-            {
-                if (buttons[col][row].isNum())
-                {
-                    openButton(col,row);
-                    buttons[col][row].setUsed(true);
                 }
-                else if (col != 0 || col != 9 || row != 0 || row != 9)
+        }
+
+        private void sweepForward(int i, int j)
+        {
+            System.out.println("HI THERE!");
+
+        /*    boolean isBomb = false;
+            boolean isOne = false;
+            while (!isBomb)
+            {
+                isBomb = reveal(i,j);
+                if (j%10 != 0) j++;
+                else
                 {
-                    openButton(col,row);
-                    buttons[col][row].setUsed(true);
+                    j = 0; i++;
                 }
 
-                System.out.println("FLLLOOOOOOOODDDDDDD FFFFFFIIIIIILLLLLLLL");
-                System.out.println("Upper Left acout to commence");
-                floodFill(col - 1, row - 1);  // upper left
-                System.out.println("UUUUUUPPPPPPPPPP");
-                floodFill(col-1, row);    // up
-                System.out.println("UUUUUPPPP right");
-                floodFill(col-1, row+1);  // upper right
-                System.out.println("RIGHT");
-                floodFill(col,   row+1);  // right
-                System.out.println("LOWER RIGHT");
-                floodFill(col+1, row+1);  // lower right
-                System.out.println("DWN");
-                floodFill(col+1, row);    // down
-                System.out.println("LOWER LET");
-                floodFill(col+1, row-1);  // lower left
-                System.out.println("LEFT");
-                floodFill(col,   row-1);  // left
-
-            }
+            }*/
         }
-        private void openButton(int col, int row)
+
+        private boolean reveal(int i, int j) // reveals what;s in the tile's location
         {
-            if (buttons[col][row].isTile())
-                buttons[col][row].setIcon(new ImageIcon("sophia.png"));
-            else if (buttons[col][row].isNum())
+            MINESWEEPER_ELEMENT element = model.getElementAt(i,j);
+            if (element == MINESWEEPER_ELEMENT.MINE)
             {
-                if      (model.isOne(col,row))   buttons[col][row].setIcon(new ImageIcon("one.png"));
-                else if (model.isTwo(col,row))   buttons[col][row].setIcon(new ImageIcon("two.png"));
-                else if (model.isThree(col,row)) buttons[col][row].setIcon(new ImageIcon("three.png"));
-                else if (model.isFour(col,row))  buttons[col][row].setIcon(new ImageIcon("four.png"));
-                else if (model.isFive(col,row))  buttons[col][row].setIcon(new ImageIcon("five.png"));
-                else if (model.isSix(col,row))   buttons[col][row].setIcon(new ImageIcon("six.png"));
-                else if (model.isSeven(col,row)) buttons[col][row].setIcon(new ImageIcon("seven.png"));
-                else                             buttons[col][row].setIcon(new ImageIcon("eight.png"));
+                buttons[i][j].setIcon(new ImageIcon("mine.png"));
+                return true;
+            }
+            else if (element == MINESWEEPER_ELEMENT.ONE)
+            {
+                buttons[i][j].setIcon(new ImageIcon("one.png"));
+                return true;
             }
             else
             {
-                System.out.println("\n\n\n***** SANITY CHECK FAIL ******* \"openButton()\"\n\n\n");
-                System.exit(0);
+                buttons[i][j].setIcon(new ImageIcon("aTile.ico"));
+                return false;
             }
         }
-        @Override
-        public void mouseClicked(MouseEvent mouseEvent) {}
 
-    /*    @Override
-        public void mousePressed(MouseEvent mouseEvent) {}*/
-
-        @Override
-        public void mouseReleased(MouseEvent mouseEvent) {}
-
-        @Override
-        public void mouseEntered(MouseEvent mouseEvent) {}
-
-        @Override
-        public void mouseExited(MouseEvent mouseEvent) {}
-    } // end private inner class HandlerClass
+    } // end private inner class ButtonHandler
 
 
-    private enum MINESWEEPER_ELEMENT {ONE, TWO, THREE, FOUR, FIVE, SIX,SEVEN, EIGHT, MINE};
-    public class MinesweeperModel
+    private enum MINESWEEPER_ELEMENT {ONE, TWO, THREE, FOUR, FIVE, SIX,SEVEN, 
+                                      EIGHT, QUESTION_MARK, MINE, FLAG, BLANK};
+    private class MinesweeperModel
     {
         private MINESWEEPER_ELEMENT[][] elements = new MINESWEEPER_ELEMENT[10][10];
 
@@ -284,7 +250,14 @@ public class Minesweeper extends JFrame
             insertMines(X,Y);
             insertNumbers();
 
-
+            /*
+            for (int i = 0; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                {
+                    if (i%2 == 0 && j%2 == 0) elements[i][j] = MINESWEEPER_ELEMENT.BOMB;   // TODO: randomize everything
+                    else elements[i][j] = MINESWEEPER_ELEMENT.BLANK;
+                }
+            */
         }
 
         private void insertNumbers()
@@ -306,7 +279,7 @@ public class Minesweeper extends JFrame
                         // insert the number into the grid
                         if (count > 0) insertTheNumber(count,i,j);
                     }
-                }
+            }
         }
 
         private void insertTheNumber(int count, int i, int j)
