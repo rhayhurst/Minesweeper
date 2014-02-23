@@ -44,7 +44,6 @@ public class ButtonExtender extends JButton
     public void setLocationJ(int locationJ) {
         this.locationJ = locationJ;
     }
-<<<<<<< HEAD
 
     private boolean isNum;
     private boolean isBomb;
@@ -74,6 +73,3 @@ public class ButtonExtender extends JButton
         this.isTile = isTile;
     }
 }
-=======
-}
->>>>>>> origin/master
